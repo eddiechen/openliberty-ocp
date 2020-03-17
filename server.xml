@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="OpenLiberty Server">
+    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="9080" httpsPort="9443"/>
+    <webApplication location="com.edw-1.0-SNAPSHOT.war"/>
+</server>
