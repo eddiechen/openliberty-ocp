@@ -36,19 +36,62 @@ Bring up an Openshift 4.x cluster. You can use RHPDS or your own environment
         * http://openliberty-demo-dev.apps.<openshift cluster link>/com.edw-1.0-SNAPSHOT/hello.jsp
  12. You have successfully deployed an app in your development project
   
-  ## Deploying the app to production
-   1. On the same RHEL server as above
-   2. oc tag  openliberty-demo:latest  openliberty-demo:prod
-   3. oc new-project openliberty-demo-prod
-   4. oc new-app --image-stream=openliberty-demo-dev/openliberty-demo:prod
-   5. oc expose svc/openliberty-demo
-   6. You will need to modify the route
-        * on Openshift dashboard, switch to administrator view
-        * networking -> routes -> openliberty-demo-prod -> yaml
-        * There are 2 lines that look like this example "openliberty-demo-openliberty-demo-prod.apps.cluster-vfc-fec4.vfc-           fec4.example.opentlc.com"
-        * change it to example like this "openliberty-demo-prod.apps.cluster-vfc-fec4.vfc-fec4.example.opentlc.com"
-        * save
+ ## Deploying the app to production
+  1. On the same RHEL server as above
+  2. oc tag  openliberty-demo:latest  openliberty-demo:prod
+  3. oc new-project openliberty-demo-prod
+  4. oc new-app --image-stream=openliberty-demo-dev/openliberty-demo:prod
+  5. oc expose svc/openliberty-demo
+  6. You will need to modify the route
+       * on Openshift dashboard, switch to administrator view
+       * networking -> routes -> openliberty-demo-prod -> yaml
+       * There are 2 lines that look like this example "openliberty-demo-openliberty-demo-prod.apps.cluster-vfc-fec4.vfc-              fec4.example.opentlc.com"
+       * change it to example like this "openliberty-demo-prod.apps.cluster-vfc-fec4.vfc-fec4.example.opentlc.com"
+       * save
+  7. Go to web browser and you should be able to see the following page
+       * http://openliberty-demo-prod.apps.<openshift cluster link>/com.edw-1.0-SNAPSHOT/hello.jsp
+  8. You have successfully deployed an app in your prod project
+ 
+ ## Modify and rebuild the java app
+  1. On the same RHEL server and make sure you are in the openliberty-ocp directory
+  2. mvn clean
+  3. vi src/main/webapp/hello.jsp and modify something
+  4. mvn clean package
   
+ ## Deploying the new app to the development project
+  1. oc project openliberty-demo-dev
+  2. oc start-build openliberty-demo --from-dir=.    #_make sure you are in the openliberty-ocp directory_
+  3. at this time, you can show the progress by going to openshift dashboard
+      * Switch to the developer view
+      * Topology -> project openliberty-demo-dev -> click on the donut icon (your app) -> Resources
+      * You should see the build #2 is running then terminating the old app container then switch to running the new container
+  4. refresh your url to your development page
+      * ex. http://openliberty-demo-dev.apps.cluster-vfc-fec4.vfc-fec4.example.opentlc.com/com.edw-1.0-SNAPSHOT/hello.jsp
+  5. new app is now running in your dev project 
+  6. oc tag openliberty-demo:latest openliberty-demo:2.0
+  
+ ## Deploying the new app to the prod project
+  1. oc tag openliberty-demo:latest openliberty-demo:prod
+  2. the command above will trigger the application update for prod
+  3. you can show the progress by going to openshift dashboard
+      * Switch to the developer view
+      * Topology -> project openliberty-demo-prod -> click on the donut icon (your app) -> Resources
+      * You should see terminating the old app container then switch to running the new container
+  4. refresh your url to your prod page
+      * ex. http://openliberty-demo-prod.apps.cluster-vfc-fec4.vfc-fec4.example.opentlc.com/com.edw-1.0-SNAPSHOT/hello.jsp
+  5. new app is now running in your dev project 
+  
+ ## Roll back production page to previous version
+  1. oc tag openliberty-demo:1.0 openliberty-demo:prod
+  2. the command above will trigger the application update for prod
+  3. you can show the progress by going to openshift dashboard
+      * Switch to the developer view
+      * Topology -> project openliberty-demo-prod -> click on the donut icon (your app) -> Resources
+      * You should see terminating the old app container then switch to running the new container
+  4. refresh your url to your prod page
+      * ex. http://openliberty-demo-prod.apps.cluster-vfc-fec4.vfc-fec4.example.opentlc.com/com.edw-1.0-SNAPSHOT/hello.jsp
+  5. previous version is now running in your dev project
+     
 
 
 (Original content from https://edwin.baculsoft.com/2019/11/deploying-a-simple-hello-world-app-using-openliberty-s2i-to-openshift/)
