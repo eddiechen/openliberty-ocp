@@ -18,6 +18,11 @@ Bring up an Openshift 4.x cluster. You can use RHPDS or your own environment
           #_downloading the latest openliberty container image_
   4. oc new-build --name=openliberty-demo --image-stream=openliberty:19.0.0.6 --binary=true
   5. oc start-build openliberty-demo --from-dir=. #_make sure you are in the openliberty-ocp directory_
+     #_You can monitor the progress in the OCP dashboard
+        * select developer mode
+        * select project openliberty-demo-dev
+        * Builds -> openliberty-demo -> builds -> check status and look for complete_
+  
 
 
 (Original content from https://edwin.baculsoft.com/2019/11/deploying-a-simple-hello-world-app-using-openliberty-s2i-to-openshift/)
